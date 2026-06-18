@@ -1,0 +1,23 @@
+<IfModule mod_rewrite.c>
+    Options +FollowSymLinks
+    RewriteEngine On
+
+    # 1. Всегда отдаем CORS-заголовки для любого запроса
+    Header always set Access-Control-Allow-Origin "http://localhost:8081"
+    Header always set Access-Control-Allow-Headers "Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-KEY"
+    Header always set Access-Control-Allow-Methods "GET, POST, OPTIONS, PUT, DELETE"
+    Header always set Access-Control-Allow-Credentials "true"
+
+    # 2. Перехватываем preflight-запросы OPTIONS на уровне сервера и сразу отвечаем 200 OK
+    RewriteCond %{REQUEST_METHOD} OPTIONS
+    RewriteRule ^(.*)$ - [R=200,L]
+
+    # 3. Стандартный роутинг CodeIgniter 4
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^([\s\S]*)$ index.php/$1 [L,NC,QSA]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    SimpleNotFound /index.php
+</IfModule>
